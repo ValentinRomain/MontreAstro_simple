@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MontreAstro</string>
+    <string name="moon_position">Position de la Lune</string>
+    <string name="zodiac_title">Zodiaque Lunaire Sidéral</string>
+    <string name="degrees">Degrés</string>
+    <string name="minutes">Minutes</string>
+    <string name="seconds">Secondes</string>
+    <string name="arc_seconds">Secondes d\'arc</string>
+    <string name="calculate">Calculer</string>
+    <string name="current_time">Heure actuelle</string>
+    <string name="custom_time">Heure personnalisée</string>
+</resources>
