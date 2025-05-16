@@ -9,4 +9,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="zodiac_background">#FF1A237E</color>
     <color name="moon_color">#FFFFD700</color>
+    <color name="ic_launcher_background">#FF1A237E</color>
 </resources>

@@ -10,6 +10,9 @@ workflows:
       - name: Install Gradle
         script: |
           brew install gradle
+      - name: Check resources
+        script: |
+          mkdir -p app/src/main/res/mipmap-mdpi app/src/main/res/mipmap-hdpi app/src/main/res/mipmap-xhdpi app/src/main/res/mipmap-xxhdpi app/src/main/res/mipmap-xxxhdpi
       - name: Build Android app
         script: |
           gradle assembleDebug
