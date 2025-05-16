@@ -7,6 +7,13 @@ workflows:
     scripts:
       - name: Set up local properties
         script: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
+      - name: Download Gradle wrapper
+        script: |
+          mkdir -p gradle/wrapper
+          curl -L https://services.gradle.org/distributions/gradle-7.5-bin.zip -o gradle-7.5-bin.zip
+          unzip -q gradle-7.5-bin.zip
+          mv gradle-7.5/* .
+          rm -rf gradle-7.5 gradle-7.5-bin.zip
       - name: Set executable permissions for gradlew
         script: chmod +x ./gradlew
       - name: Build Android app
