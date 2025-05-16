@@ -51,7 +51,7 @@
         app:layout_constraintBottom_toTopOf="@+id/calculateButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        tools:text="0° 0' 0\" (0\")" />
+        tools:text="0° 0\' 0\'\' (0\'\')" />
 
     <Button
         android:id="@+id/calculateButton"
