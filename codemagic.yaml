@@ -4,17 +4,17 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       java: 11
-      android_signing:
-        - keystore_reference
+      # Commentez ou supprimez les lignes suivantes
+      # android_signing:
+      #   - keystore_reference
     scripts:
       - name: Set up local properties
         script: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
       - name: Build Android app
         script: |
-          ./gradlew assembleRelease
+          ./gradlew assembleDebug
     artifacts:
-      - app/build/outputs/apk/release/app-release.apk
-      - app/build/outputs/mapping/release/mapping.txt
+      - app/build/outputs/apk/debug/app-debug.apk
     publishing:
       email:
         recipients:
