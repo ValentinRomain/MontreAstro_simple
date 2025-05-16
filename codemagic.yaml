@@ -4,16 +4,15 @@ workflows:
     instance_type: mac_mini_m1
     environment:
       java: 11
-      android_signing:
-        - keystore_reference
     scripts:
       - name: Set up local properties
         script: echo "sdk.dir=$ANDROID_SDK_ROOT" > "$CM_BUILD_DIR/local.properties"
-      - name: Set executable permissions for gradlew
-        script: chmod +x ./gradlew
+      - name: Install Gradle
+        script: |
+          brew install gradle
       - name: Build Android app
         script: |
-          ./gradlew assembleDebug
+          gradle assembleDebug
     artifacts:
       - app/build/outputs/apk/debug/app-debug.apk
     publishing:
