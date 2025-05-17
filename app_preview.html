@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MontreAstro - Prévisualisation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6200EA;
+            --secondary-color: #03DAC6;
+            --background-dark: #121212;
+            --background-card: #1E1E1E;
+            --text-primary: #FFFFFF;
+            --text-secondary: rgba(255, 255, 255, 0.7);
+            --sun-color: #FF9800;
+            --moon-color: #FFD700;
+            --mercury-color: #9E9E9E;
+            --venus-color: #FFEB3B;
+            --mars-color: #F44336;
+            --jupiter-color: #FF5722;
+            --saturn-color: #795548;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--background-dark);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-primary);
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .phone-frame {
+            width: 360px;
+            height: 640px;
+            background-color: var(--background-dark);
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border: 8px solid #333;
+        }
+        
+        .status-bar {
+            height: 24px;
+            background-color: var(--background-dark);
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0 10px;
+        }
+        
+        .status-bar-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            background-color: white;
+            opacity: 0.8;
+            border-radius: 50%;
+        }
+        
+        .app-content {
+            height: calc(100% - 24px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .title span {
+            color: var(--secondary-color);
+            margin-left: 8px;
+        }
+        
+        .zodiac-view {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            margin-bottom: 16px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(98, 0, 234, 0.3);
+        }
+        
+        .zodiac-background {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            background: radial-gradient(circle, #1A237E 0%, #0D47A1 50%, #000051 100%);
+            border-radius: 50%;
+        }
+        
+        .zodiac-circle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+        
+        .zodiac-inner-circle {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            box-sizing: border-box;
+        }
+        
+        .marker {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 150px;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.3);
+            transform-origin: left center;
+        }
+        
+        .marker-label {
+            position: absolute;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .celestial-body {
+            position: absolute;
+            transform-origin: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+        }
+        
+        .celestial-body-icon {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+        }
+        
+        .celestial-body-label {
+            position: absolute;
+            color: var(--text-primary);
+            font-size: 10px;
+            bottom: -18px;
+            text-align: center;
+            width: 100%;
+        }
+        
+        .glow {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(8px);
+            opacity: 0.6;
+        }
+        
+        .moon-card {
+            width: 90%;
+            background-color: var(--background-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-top: 16px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .moon-position-title {
+            font-size: 20px;
+            font-weight: 500;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .moon-position-details {
+            font-size: 24px;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 8px;
+            color: var(--moon-color);
+        }
+        
+        .update-time {
+            font-size: 14px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-weight: 300;
+            margin-bottom: 16px;
+        }
+        
+        .natal-positions-title {
+            font-size: 16px;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+        
+        .natal-positions {
+            font-size: 12px;
+            text-align: left;
+            color: var(--text-secondary);
+            font-weight: 300;
+            line-height: 1.6;
+            padding: 0 8px;
+        }
+        
+        .planet-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        .planet-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            max-width: 600px;
+            padding: 0 20px;
+        }
+        
+        .info h2 {
+            color: var(--text-primary);
+            font-weight: 300;
+            letter-spacing: 1px;
+        }
+        
+        .info p {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Styles pour les étoiles */
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+        
+        /* Style pour les lignes de grille */
+        .grid-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300px;
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.1);
+            transform-origin: left center;
+        }
+        
+        /* Style pour les signes du zodiaque */
+        .zodiac-sign {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 10px;
+            font-weight: 500;
+        }
+        
+        /* Scrollbar personnalisée */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .info {
+                margin-top: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="phone-frame">
+            <div class="status-bar">
+                <div class="status-bar-icon"></div>
+                <div class="status-bar-icon"></div>
+                <div class="status-bar-icon"></div>
+            </div>
+            <div class="app-content">
+                <div class="title">Zodiaque <span>Lunaire Sidéral</span></div>
+                <div class="zodiac-view">
+                    <div class="zodiac-background"></div>
+                    <div class="zodiac-circle"></div>
+                    <div class="zodiac-inner-circle"></div>
+                    
+                    <!-- Lignes de grille (tous les 30 degrés) -->
+                    <div class="grid-line" style="transform: rotate(0deg);"></div>
+                    <div class="grid-line" style="transform: rotate(30deg);"></div>
+                    <div class="grid-line" style="transform: rotate(60deg);"></div>
+                    <div class="grid-line" style="transform: rotate(90deg);"></div>
+                    <div class="grid-line" style="transform: rotate(120deg);"></div>
+                    <div class="grid-line" style="transform: rotate(150deg);"></div>
+                    
+                    <!-- Marqueurs principaux -->
+                    <div class="marker" style="transform: rotate(0deg);"></div>
+                    <div class="marker" style="transform: rotate(90deg);"></div>
+                    <div class="marker" style="transform: rotate(180deg);"></div>
+                    <div class="marker" style="transform: rotate(270deg);"></div>
+                    
+                    <!-- Étiquettes des degrés -->
+                    <div class="marker-label" style="top: 10px; left: 50%; transform: translateX(-50%);">0°</div>
+                    <div class="marker-label" style="top: 50%; right: 10px; transform: translateY(-50%);">90°</div>
+                    <div class="marker-label" style="bottom: 10px; left: 50%; transform: translateX(-50%);">180°</div>
+                    <div class="marker-label" style="top: 50%; left: 10px; transform: translateY(-50%);">270°</div>
+                    
+                    <!-- Signes du zodiaque -->
+                    <div class="zodiac-sign" style="top: 5px; left: 50%; transform: translateX(-50%);">Bélier</div>
+                    <div class="zodiac-sign" style="top: 50%; right: 5px; transform: translateY(-50%);">Cancer</div>
+                    <div class="zodiac-sign" style="bottom: 5px; left: 50%; transform: translateX(-50%);">Balance</div>
+                    <div class="zodiac-sign" style="top: 50%; left: 5px; transform: translateY(-50%);">Capricorne</div>
+                    
+                    <!-- Étoiles -->
+                    <div id="stars-container"></div>
+                    
+                    <!-- Lune en transit (position actuelle) -->
+                    <div id="current-moon" class="celestial-body" style="width: 40px; height: 40px;">
+                        <div class="glow" style="width: 60px; height: 60px; background-color: rgba(255, 215, 0, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40" fill="#FFD700">
+                                <path d="M12,2.1L13.9,7h5.1l-4,4.2l1.3,5.1L12,13.4L7.7,16.3l1.3-5.1L5,7h5.1z"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">192.7°</div>
+                    </div>
+                    
+                    <!-- Astres nataux (17/12/1991 7h27) avec positions correctes -->
+                    <!-- Soleil natal (Sagittaire 1° 03' 30.31" = 241.06°) -->
+                    <div class="celestial-body" style="width: 30px; height: 30px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(241.06deg) translateX(100px);">
+                        <div class="glow" style="width: 45px; height: 45px; background-color: rgba(255, 152, 0, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="#FF9800">
+                                <circle cx="12" cy="12" r="5"/>
+                                <path d="M12,2v2 M12,20v2 M2,12h2 M20,12h2 M4.93,4.93l1.41,1.41 M17.66,17.66l1.41,1.41 M4.93,19.07l1.41-1.41 M17.66,6.34l1.41-1.41"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Sgr 1°03'</div>
+                    </div>
+                    
+                    <!-- Lune natale (Bélier 5° 17' 00.71" = 5.28°) -->
+                    <div class="celestial-body" style="width: 25px; height: 25px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(5.28deg) translateX(100px); border: 2px solid white; border-radius: 50%;">
+                        <div class="glow" style="width: 35px; height: 35px; background-color: rgba(255, 215, 0, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="25" height="25" fill="#FFD700">
+                                <path d="M12,2.1L13.9,7h5.1l-4,4.2l1.3,5.1L12,13.4L7.7,16.3l1.3-5.1L5,7h5.1z"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Ari 5°17'</div>
+                    </div>
+                    
+                    <!-- Mercure natal (Scorpion 14° 16' 53.09" = 224.28°) -->
+                    <div class="celestial-body" style="width: 20px; height: 20px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(224.28deg) translateX(100px);">
+                        <div class="glow" style="width: 30px; height: 30px; background-color: rgba(158, 158, 158, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="#9E9E9E">
+                                <circle cx="12" cy="8" r="5"/>
+                                <path d="M12,13v8 M8,17h8 M7,21l10-10"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Sco 14°16'</div>
+                    </div>
+                    
+                    <!-- Vénus natal (Balance 19° 05' 09.00" = 199.09°) -->
+                    <div class="celestial-body" style="width: 28px; height: 28px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(199.09deg) translateX(100px);">
+                        <div class="glow" style="width: 40px; height: 40px; background-color: rgba(255, 235, 59, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="#FFEB3B">
+                                <circle cx="12" cy="8" r="5"/>
+                                <path d="M12,13v8 M8,17h8"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Lib 19°05'</div>
+                    </div>
+                    
+                    <!-- Mars natal (Scorpion 19° 17' 13.46" = 229.29°) -->
+                    <div class="celestial-body" style="width: 24px; height: 24px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(229.29deg) translateX(100px);">
+                        <div class="glow" style="width: 35px; height: 35px; background-color: rgba(244, 67, 54, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="#F44336">
+                                <circle cx="12" cy="16" r="5"/>
+                                <path d="M12,11V3 M8,7l4-4l4,4"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Sco 19°17'</div>
+                    </div>
+                    
+                    <!-- Jupiter natal (Lion 20° 34' 56.21" = 140.58°) -->
+                    <div class="celestial-body" style="width: 32px; height: 32px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(140.58deg) translateX(100px);">
+                        <div class="glow" style="width: 45px; height: 45px; background-color: rgba(255, 87, 34, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="#FF5722">
+                                <path d="M12,3v12 M6,9h12 M4,15h6 M4,19h6"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Leo 20°34'</div>
+                    </div>
+                    
+                    <!-- Saturne natal (Capricorne 10° 32' 05.62" = 280.54°) -->
+                    <div class="celestial-body" style="width: 30px; height: 30px; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(280.54deg) translateX(100px);">
+                        <div class="glow" style="width: 42px; height: 42px; background-color: rgba(121, 85, 72, 0.3);"></div>
+                        <div class="celestial-body-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="30" fill="#795548">
+                                <path d="M12,2v20 M7,4h10 M7,8h10"/>
+                            </svg>
+                        </div>
+                        <div class="celestial-body-label">Cap 10°32'</div>
+                    </div>
+                </div>
+                
+                <div class="moon-card">
+                    <div class="moon-position-title">Position de la Lune</div>
+                    <div class="moon-position-details" id="moon-position">192° 41' 59"</div>
+                    <div class="update-time" id="update-time">Mise à jour: 10:18:00</div>
+                    
+                    <div class="natal-positions-title">Positions Natales (17/12/1991 7:27)</div>
+                    <div class="natal-positions">
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#FF9800">
+                                    <circle cx="12" cy="12" r="5"/>
+                                    <path d="M12,2v2 M12,20v2 M2,12h2 M20,12h2 M4.93,4.93l1.41,1.41 M17.66,17.66l1.41,1.41 M4.93,19.07l1.41-1.41 M17.66,6.34l1.41-1.41"/>
+                                </svg>
+                            </div>
+                            <span>Soleil: Sgr 1° 03' 30.31" (241.06°)</span>
+                        </div>
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#FFD700">
+                                    <path d="M12,2.1L13.9,7h5.1l-4,4.2l1.3,5.1L12,13.4L7.7,16.3l1.3-5.1L5,7h5.1z"/>
+                                </svg>
+                            </div>
+                            <span>Lune: Ari 5° 17' 00.71" (5.28°)</span>
+                        </div>
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#9E9E9E">
+                                    <circle cx="12" cy="8" r="5"/>
+                                    <path d="M12,13v8 M8,17h8 M7,21l10-10"/>
+                                </svg>
+                            </div>
+                            <span>Mercure: Sco 14° 16' 53.09" (224.28°)</span>
+                        </div>
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#FFEB3B">
+                                    <circle cx="12" cy="8" r="5"/>
+                                    <path d="M12,13v8 M8,17h8"/>
+                                </svg>
+                            </div>
+                            <span>Vénus: Lib 19° 05' 09.00" (199.09°)</span>
+                        </div>
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#F44336">
+                                    <circle cx="12" cy="16" r="5"/>
+                                    <path d="M12,11V3 M8,7l4-4l4,4"/>
+                                </svg>
+                            </div>
+                            <span>Mars: Sco 19° 17' 13.46" (229.29°)</span>
+                        </div>
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#FF5722">
+                                    <path d="M12,3v12 M6,9h12 M4,15h6 M4,19h6"/>
+                                </svg>
+                            </div>
+                            <span>Jupiter: Leo 20° 34' 56.21" (140.58°)</span>
+                        </div>
+                        <div class="planet-row">
+                            <div class="planet-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="#795548">
+                                    <path d="M12,2v20 M7,4h10 M7,8h10"/>
+                                </svg>
+                            </div>
+                            <span>Saturne: Cap 10° 32' 05.62" (280.54°)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Créer des étoiles aléatoires
+        function createStars() {
+            const starsContainer = document.getElementById('stars-container');
+            const zodiacView = document.querySelector('.zodiac-view');
+            const width = zodiacView.offsetWidth;
+            const height = zodiacView.offsetHeight;
+            
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // Position aléatoire dans le cercle
+                let x, y, distance;
+                do {
+                    x = Math.random() * width;
+                    y = Math.random() * height;
+                    const centerX = width / 2;
+                    const centerY = height / 2;
+                    distance = Math.sqrt(Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2));
+                } while (distance > width / 2); // S'assurer que l'étoile est dans le cercle
+                
+                star.style.left = x + 'px';
+                star.style.top = y + 'px';
+                
+                // Taille aléatoire
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                
+                // Opacité aléatoire
+                star.style.opacity = Math.random() * 0.8 + 0.2;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Animation de scintillement pour les étoiles
+        function animateStars() {
+            const stars = document.querySelectorAll('.star');
+            stars.forEach(star => {
+                setInterval(() => {
+                    star.style.opacity = Math.random() * 0.8 + 0.2;
+                }, Math.random() * 3000 + 1000);
+            });
+        }
+        
+        // Initialiser
+        window.onload = function() {
+            createStars();
+            animateStars();
+        };
+    </script>
+</body>
+</html>

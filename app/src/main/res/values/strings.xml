@@ -10,4 +10,26 @@
     <string name="calculate">Calculer</string>
     <string name="current_time">Heure actuelle</string>
     <string name="custom_time">Heure personnalisée</string>
+
+    <!-- Noms des astres -->
+    <string name="sun">Soleil</string>
+    <string name="moon">Lune</string>
+    <string name="mercury">Mercure</string>
+    <string name="venus">Vénus</string>
+    <string name="mars">Mars</string>
+    <string name="jupiter">Jupiter</string>
+    <string name="saturn">Saturne</string>
+
+    <!-- Positions des astres natals -->
+    <string name="sun_position">Soleil: 30.31\"</string>
+    <string name="natal_moon_position">Lune: 00.71\"</string>
+    <string name="mercury_position">Mercure: 53.09\"</string>
+    <string name="venus_position">Vénus: 09.00\"</string>
+    <string name="mars_position">Mars: 13.46\"</string>
+    <string name="jupiter_position">Jupiter: 56.21\"</string>
+    <string name="saturn_position">Saturne: 05.62\"</string>
+
+    <!-- Interface -->
+    <string name="update_time">Mise à jour: %1$s</string>
+    <string name="natal_positions">Positions Natales (17/12/1991 7:27)</string>
 </resources>

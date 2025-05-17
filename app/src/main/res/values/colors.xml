@@ -10,4 +10,21 @@
     <color name="zodiac_background">#FF1A237E</color>
     <color name="moon_color">#FFFFD700</color>
     <color name="ic_launcher_background">#FF1A237E</color>
+
+    <!-- Couleurs de l'interface -->
+    <color name="background_color">#FF0D1117</color>
+    <color name="card_background">#FF161B22</color>
+    <color name="accent_color">#FF58A6FF</color>
+
+    <!-- Couleurs des astres -->
+    <color name="sun_color">#FFFF9800</color>
+    <color name="mercury_color">#FF9E9E9E</color>
+    <color name="venus_color">#FFFFEB3B</color>
+    <color name="mars_color">#FFF44336</color>
+    <color name="jupiter_color">#FFFF5722</color>
+    <color name="saturn_color">#FF795548</color>
+
+    <!-- Couleurs des effets -->
+    <color name="glow_color">#80FFFFFF</color>
+    <color name="star_color">#FFFFFFFF</color>
 </resources>

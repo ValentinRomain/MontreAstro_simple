@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fond étoilé -->
+    <item>
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="250dp"
+                android:startColor="#1A237E"
+                android:centerColor="#0D47A1"
+                android:endColor="#000051" />
+        </shape>
+    </item>
+    
+    <!-- Cercle extérieur -->
+    <item>
+        <shape android:shape="ring"
+            android:innerRadius="120dp"
+            android:thickness="2dp"
+            android:useLevel="false">
+            <solid android:color="#80FFFFFF" />
+        </shape>
+    </item>
+    
+    <!-- Cercle intérieur -->
+    <item>
+        <shape android:shape="ring"
+            android:innerRadius="100dp"
+            android:thickness="2dp"
+            android:useLevel="false">
+            <solid android:color="#80FFFFFF" />
+        </shape>
+    </item>
+</layer-list>

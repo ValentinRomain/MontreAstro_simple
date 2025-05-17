@@ -180,4 +180,224 @@ class AstronomyCalculator {
      * Classe pour représenter un quadruple de valeurs
      */
     data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)
+
+    /**
+     * Classe pour stocker les positions des astres
+     */
+    data class CelestialBodyPositions(
+        val sun: Double,
+        val moon: Double,
+        val mercury: Double,
+        val venus: Double,
+        val mars: Double,
+        val jupiter: Double,
+        val saturn: Double
+    ) {
+        // Méthode pour obtenir une représentation textuelle des positions
+        fun getPositionDescription(): String {
+            return """
+                Soleil: ${formatDegrees(sun)}
+                Lune: ${formatDegrees(moon)}
+                Mercure: ${formatDegrees(mercury)}
+                Vénus: ${formatDegrees(venus)}
+                Mars: ${formatDegrees(mars)}
+                Jupiter: ${formatDegrees(jupiter)}
+                Saturne: ${formatDegrees(saturn)}
+            """.trimIndent()
+        }
+
+        // Formater les degrés en notation astrologique
+        private fun formatDegrees(degrees: Double): String {
+            val wholeDegrees = degrees.toInt()
+            val minutes = ((degrees - wholeDegrees) * 60).toInt()
+            val seconds = ((degrees - wholeDegrees) * 60 - minutes) * 60
+
+            return String.format("%d° %d' %.2f\"", wholeDegrees, minutes, seconds)
+        }
+    }
+
+    /**
+     * Calcule le jour julien à partir d'une date et heure spécifiques
+     */
+    fun getDayNumber(year: Int, month: Int, day: Int, hour: Int, minute: Int): Double {
+        val ut = hour + minute / 60.0
+
+        // Formule valide pour le calendrier grégorien
+        var d = 367 * year - 7 * (year + (month + 9) / 12) / 4 -
+                3 * ((year + (month - 9) / 7) / 100 + 1) / 4 +
+                275 * month / 9 + day - 730515
+
+        // Convertir d en Double et ajouter ut/24.0
+        return d.toDouble() + ut / 24.0
+    }
+
+    /**
+     * Calcule la position du Soleil
+     * @return longitude écliptique
+     */
+    fun calculateSunPosition(dayNumber: Double): Double {
+        // Éléments orbitaux du Soleil
+        val w = normalizeAngle(282.9404 + 4.70935E-5 * dayNumber) // Argument du périhélie
+        val e = 0.016709 - 1.151E-9 * dayNumber // Excentricité
+        val M = normalizeAngle(356.0470 + 0.9856002585 * dayNumber) // Anomalie moyenne
+
+        // Calcul de l'anomalie excentrique
+        val E = calculateEccentricAnomaly(M, e)
+
+        // Calcul de la longitude vraie
+        val xv = cos(E * DEG_TO_RAD) - e
+        val yv = sqrt(1.0 - e * e) * sin(E * DEG_TO_RAD)
+        val v = atan2(yv, xv) * RAD_TO_DEG
+
+        // Longitude écliptique du Soleil
+        return normalizeAngle(v + w)
+    }
+
+    /**
+     * Calcule la position de Mercure
+     * @return longitude écliptique
+     */
+    fun calculateMercuryPosition(dayNumber: Double): Double {
+        // Éléments orbitaux de Mercure
+        val N = normalizeAngle(48.3313 + 3.24587E-5 * dayNumber) // Longitude du nœud ascendant
+        val i = 7.0047 + 5.00E-8 * dayNumber // Inclinaison
+        val w = normalizeAngle(29.1241 + 1.01444E-5 * dayNumber) // Argument du périhélie
+        val a = 0.387098 // Demi-grand axe
+        val e = 0.205635 + 5.59E-10 * dayNumber // Excentricité
+        val M = normalizeAngle(168.6562 + 4.0923344368 * dayNumber) // Anomalie moyenne
+
+        // Calcul de l'anomalie excentrique
+        val E = calculateEccentricAnomaly(M, e)
+
+        // Calcul de la longitude vraie
+        val xv = a * (cos(E * DEG_TO_RAD) - e)
+        val yv = a * sqrt(1.0 - e * e) * sin(E * DEG_TO_RAD)
+        val v = atan2(yv, xv) * RAD_TO_DEG
+
+        // Longitude écliptique de Mercure
+        return normalizeAngle(v + w)
+    }
+
+    /**
+     * Calcule la position de Vénus
+     * @return longitude écliptique
+     */
+    fun calculateVenusPosition(dayNumber: Double): Double {
+        // Éléments orbitaux de Vénus
+        val N = normalizeAngle(76.6799 + 2.46590E-5 * dayNumber) // Longitude du nœud ascendant
+        val i = 3.3946 + 2.75E-8 * dayNumber // Inclinaison
+        val w = normalizeAngle(54.8910 + 1.38374E-5 * dayNumber) // Argument du périhélie
+        val a = 0.723330 // Demi-grand axe
+        val e = 0.006773 - 1.302E-9 * dayNumber // Excentricité
+        val M = normalizeAngle(48.0052 + 1.6021302244 * dayNumber) // Anomalie moyenne
+
+        // Calcul de l'anomalie excentrique
+        val E = calculateEccentricAnomaly(M, e)
+
+        // Calcul de la longitude vraie
+        val xv = a * (cos(E * DEG_TO_RAD) - e)
+        val yv = a * sqrt(1.0 - e * e) * sin(E * DEG_TO_RAD)
+        val v = atan2(yv, xv) * RAD_TO_DEG
+
+        // Longitude écliptique de Vénus
+        return normalizeAngle(v + w)
+    }
+
+    /**
+     * Calcule la position de Mars
+     * @return longitude écliptique
+     */
+    fun calculateMarsPosition(dayNumber: Double): Double {
+        // Éléments orbitaux de Mars
+        val N = normalizeAngle(49.5574 + 2.11081E-5 * dayNumber) // Longitude du nœud ascendant
+        val i = 1.8497 - 1.78E-8 * dayNumber // Inclinaison
+        val w = normalizeAngle(286.5016 + 2.92961E-5 * dayNumber) // Argument du périhélie
+        val a = 1.523688 // Demi-grand axe
+        val e = 0.093405 + 2.516E-9 * dayNumber // Excentricité
+        val M = normalizeAngle(18.6021 + 0.5240207766 * dayNumber) // Anomalie moyenne
+
+        // Calcul de l'anomalie excentrique
+        val E = calculateEccentricAnomaly(M, e)
+
+        // Calcul de la longitude vraie
+        val xv = a * (cos(E * DEG_TO_RAD) - e)
+        val yv = a * sqrt(1.0 - e * e) * sin(E * DEG_TO_RAD)
+        val v = atan2(yv, xv) * RAD_TO_DEG
+
+        // Longitude écliptique de Mars
+        return normalizeAngle(v + w)
+    }
+
+    /**
+     * Calcule la position de Jupiter
+     * @return longitude écliptique
+     */
+    fun calculateJupiterPosition(dayNumber: Double): Double {
+        // Éléments orbitaux de Jupiter
+        val N = normalizeAngle(100.4542 + 2.76854E-5 * dayNumber) // Longitude du nœud ascendant
+        val i = 1.3030 - 1.557E-7 * dayNumber // Inclinaison
+        val w = normalizeAngle(273.8777 + 1.64505E-5 * dayNumber) // Argument du périhélie
+        val a = 5.20256 // Demi-grand axe
+        val e = 0.048498 + 4.469E-9 * dayNumber // Excentricité
+        val M = normalizeAngle(19.8950 + 0.0830853001 * dayNumber) // Anomalie moyenne
+
+        // Calcul de l'anomalie excentrique
+        val E = calculateEccentricAnomaly(M, e)
+
+        // Calcul de la longitude vraie
+        val xv = a * (cos(E * DEG_TO_RAD) - e)
+        val yv = a * sqrt(1.0 - e * e) * sin(E * DEG_TO_RAD)
+        val v = atan2(yv, xv) * RAD_TO_DEG
+
+        // Longitude écliptique de Jupiter
+        return normalizeAngle(v + w)
+    }
+
+    /**
+     * Calcule la position de Saturne
+     * @return longitude écliptique
+     */
+    fun calculateSaturnPosition(dayNumber: Double): Double {
+        // Éléments orbitaux de Saturne
+        val N = normalizeAngle(113.6634 + 2.38980E-5 * dayNumber) // Longitude du nœud ascendant
+        val i = 2.4886 - 1.081E-7 * dayNumber // Inclinaison
+        val w = normalizeAngle(339.3939 + 2.97661E-5 * dayNumber) // Argument du périhélie
+        val a = 9.55475 // Demi-grand axe
+        val e = 0.055546 - 9.499E-9 * dayNumber // Excentricité
+        val M = normalizeAngle(316.9670 + 0.0334442282 * dayNumber) // Anomalie moyenne
+
+        // Calcul de l'anomalie excentrique
+        val E = calculateEccentricAnomaly(M, e)
+
+        // Calcul de la longitude vraie
+        val xv = a * (cos(E * DEG_TO_RAD) - e)
+        val yv = a * sqrt(1.0 - e * e) * sin(E * DEG_TO_RAD)
+        val v = atan2(yv, xv) * RAD_TO_DEG
+
+        // Longitude écliptique de Saturne
+        return normalizeAngle(v + w)
+    }
+
+    /**
+     * Calcule les positions de tous les astres à une date donnée
+     */
+    fun calculateAllPositions(dayNumber: Double): CelestialBodyPositions {
+        val sunLongitude = calculateSunPosition(dayNumber)
+        val moonLongitude = calculateMoonPosition(dayNumber).first
+        val mercuryLongitude = calculateMercuryPosition(dayNumber)
+        val venusLongitude = calculateVenusPosition(dayNumber)
+        val marsLongitude = calculateMarsPosition(dayNumber)
+        val jupiterLongitude = calculateJupiterPosition(dayNumber)
+        val saturnLongitude = calculateSaturnPosition(dayNumber)
+
+        return CelestialBodyPositions(
+            sunLongitude,
+            moonLongitude,
+            mercuryLongitude,
+            venusLongitude,
+            marsLongitude,
+            jupiterLongitude,
+            saturnLongitude
+        )
+    }
 }
